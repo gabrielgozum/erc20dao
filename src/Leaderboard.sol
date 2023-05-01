@@ -3,30 +3,33 @@ pragma solidity ^0.8.13;
 
 import "openzeppelin-contracts/token/ERC20/ERC20.sol";
 
-library circuleBuffer {
-    bool private constant PREV = 0;
-    bool private constant NEXT = 1;
-    int256 private constant HEAD = 0x0;
+struct Circular {
     mapping(address => mapping(bool => address)) dllIndex;
+}
 
-    function add(address _addr) public virtual {
+library circuleBuffer {
+    bool private constant PREV = false;
+    bool private constant NEXT = true;
+    address private constant HEAD = address(0); // 0x0
+
+    function add(Circular storage self, address _addr) internal {
         // Link the new node
-        dllIndex[_addr][PREV] = HEAD;
-        dllIndex[_addr][NEXT] = dllIndex[HEAD][NEXT];
+        self.dllIndex[_addr][PREV] = HEAD;
+        self.dllIndex[_addr][NEXT] = self.dllIndex[HEAD][NEXT];
 
         // Insert the new node
-        dllIndex[dllIndex[HEAD][NEXT]][PREV] = _addr;
-        dllIndex[HEAD][NEXT] = _addr;
+        self.dllIndex[self.dllIndex[HEAD][NEXT]][PREV] = _addr;
+        self.dllIndex[HEAD][NEXT] = _addr;
     }
 
-    function remove(address _addr) public virtual {
+    function remove(Circular storage self, address _addr) internal {
         // Stitch the neighbours together
-        dllIndex[dllIndex[_addr][PREV]][NEXT] = dllIndex[_addr][NEXT];
-        dllIndex[dllIndex[_addr][NEXT]][PREV] = dllIndex[_addr][PREV];
+        self.dllIndex[self.dllIndex[_addr][PREV]][NEXT] = self.dllIndex[_addr][NEXT];
+        self.dllIndex[self.dllIndex[_addr][NEXT]][PREV] = self.dllIndex[_addr][PREV];
 
         // Delete state storage
-        delete dllIndex[_addr][PREV];
-        delete dllIndex[_addr][NEXT];
+        delete self.dllIndex[_addr][PREV];
+        delete self.dllIndex[_addr][NEXT];
     }
 }
 
@@ -112,10 +115,9 @@ contract Leaderboard is ERC20 {
     mapping(address => uint256) balances;
 
     // Just a struct holding our data.
-    itmap data;
+    itmap dataIterable;
 
-    // Apply library functions to the data type.
-    using IterableMapping for itmap;
+    using IterableMapping for itmap; // Apply library functions to the data type.
 
     // mapping(address => string) public messages; // store stakers messages
     // struct Entry {
@@ -132,7 +134,7 @@ contract Leaderboard is ERC20 {
         assert(msg.sender == owner);
         _mint(to, amount);
         insert(to, message); // map address to message
-        // messages[to] = message;
+            // messages[to] = message;
     }
 
     function burn(address form, uint256 amount) public virtual {
@@ -142,17 +144,17 @@ contract Leaderboard is ERC20 {
     // Insert something
     function insert(address k, string memory v) public returns (uint256 size) {
         // This calls IterableMapping.insert(data, k, v)
-        data.insert(k, v);
+        dataIterable.insert(k, v);
         // We can still access members of the struct, but we should take care not to mess with them.
-        return data.size;
+        return dataIterable.size;
     }
 
     function getMessage(address addr) public view returns (string memory) {
         // return messages[user];
-        return data[addr].value;
+        return dataIterable.data[addr].value;
     }
 
-    function getMessages() public view returns (address[] memory, messages[] memory) {
+    function getMessages() public view returns (address[] memory, string[] memory) {
         // for (Iterator i = data.iterateStart(); data.iterateValid(i); i = data.iterateNext(i)) {
         //     (, string memory value) = data.iterateGet(i);
         //     // do something
@@ -161,7 +163,7 @@ contract Leaderboard is ERC20 {
         // // ---------
 
         // uint256 len = 50;
-        // // address[] memory addressList = new address[](len);
+        // address[] memory addressList = new address[](len);
         // address[] memory addressList;
         // string[] memory messageList;
 
