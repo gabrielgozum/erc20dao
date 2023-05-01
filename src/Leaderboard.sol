@@ -12,19 +12,22 @@ contract Leaderboard is ERC20 {
         owner = msg.sender;
     }
 
-    function mint(address to, uint256 amount, string memory message) public virtual {
+    function mint(
+        address to,
+        uint256 amount,
+        string memory message
+    ) public virtual {
         // assert sender address is the contract owner
         assert(msg.sender == owner);
         _mint(to, amount);
         messages[to] = message;
     }
 
-
     function burn(address form, uint amount) public virtual {
         _burn(form, amount);
     }
 
-    function getMessage(address user) public virtual returns(string memory) {
-        return messages[user]; 
+    function getMessage(address user) public virtual returns (string memory) {
+        return messages[user];
     }
 }

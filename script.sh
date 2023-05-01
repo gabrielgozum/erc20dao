@@ -17,3 +17,9 @@ initialize_repo() {
   git submodule update --init --remote
   git submodule update --init --recursive
 }
+
+development_remix() {
+  remixd # run local server
+
+  # open and integrate: remix.ethereum.org
+}
