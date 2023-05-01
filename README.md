@@ -1,0 +1,6 @@
+- <https://remix.ethereum.org/>
+- <https://book.getfoundry.sh/>
+- <https://www.youtube.com/watch?v=s9MVkHKV2Vw>
+- <https://www.openzeppelin.com/contracts>
+- <https://docs.openzeppelin.com/contracts/4.x/erc721>
+- <https://docs.openzeppelin.com/contracts/4.x/erc1155>
