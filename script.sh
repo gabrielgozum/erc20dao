@@ -11,3 +11,7 @@ install() {
   npm install -g solc
   curl -L https://foundry.paradigm.xyz | bash
 }
+
+#  https://remix.ethereum.org/
+# https://book.getfoundry.sh/
+# https://www.youtube.com/watch?v=s9MVkHKV2Vw
