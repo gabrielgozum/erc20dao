@@ -23,3 +23,8 @@ development_remix() {
 
   # open and integrate: remix.ethereum.org
 }
+
+dev_forge() {
+  forge build
+  forge test
+}
