@@ -10,8 +10,10 @@ deploy() {
 install() {
   npm install -g solc
   curl -L https://foundry.paradigm.xyz | bash
+  npm install -g @remix-project/remixd
 }
 
-#  https://remix.ethereum.org/
-# https://book.getfoundry.sh/
-# https://www.youtube.com/watch?v=s9MVkHKV2Vw
+initialize_repo() {
+  git submodule update --init --remote
+  git submodule update --init --recursive
+}

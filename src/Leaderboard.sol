@@ -21,4 +21,8 @@ contract Leaderboard is ERC20 {
     function burn(address form, uint amount) public virtual {
         _burn(form, amount);
     }
+
+    function getMessage() public virtual returns(string memory) {
+        return (message); 
+    }
 }
