@@ -27,12 +27,12 @@ contract ContractTest is Test {
     }
 
     function testMint() public {
-        token.mint(alice, 2e18);
+        token.mint(alice, 2e18, "test");
         assertEq(token.totalSupply(), token.balanceOf(alice));
     }
 
     function testBurn() public {
-        token.mint(alice, 10e18);
+        token.mint(alice, 10e18, "test");
         assertEq(token.balanceOf(alice),10e18);
         
         token.burn(alice, 8e18);
@@ -78,7 +78,7 @@ contract ContractTest is Test {
     }
 
     function testFailMintToZero() external {
-        token.mint(address(0), 1e18);
+        token.mint(address(0), 1e18, "test");
     }
 
     function testFailBurnFromZero() external {
@@ -139,14 +139,14 @@ contract ContractTest is Test {
 
     function testFuzzMint(address to, uint256 amount) external {
         vm.assume(to != address(0));
-        token.mint(to,amount);
+        token.mint(to,amount, "test");
         assertEq(token.totalSupply(), token.balanceOf(to));
     }
 
     function testFuzzBurn(address from, uint256 mintAmount, uint256 burnAmount) external {
         vm.assume(from != address(0));              // from address must not zero
         burnAmount = bound(burnAmount, 0, mintAmount);    // if burnAmount > mintAmount then bound burnAmount to 0 to mintAmount
-        token.mint(from , mintAmount);
+        token.mint(from , mintAmount, "test");
         token.burn(from, burnAmount);
         assertEq(token.totalSupply() , mintAmount - burnAmount);
         assertEq(token.balanceOf(from), mintAmount - burnAmount);
@@ -161,7 +161,7 @@ contract ContractTest is Test {
     function testFuzzTransfer(address to, uint256 amount) external {
         vm.assume(to != address(0));
         vm.assume(to != address(this));
-        token.mint(address(this), amount);
+        token.mint(address(this), amount, "test");
         
         assertTrue(token.transfer(to,amount));
         assertEq(token.balanceOf(address(this)), 0);
@@ -173,7 +173,7 @@ contract ContractTest is Test {
         vm.assume(to != address(0));
 
         amount = bound(amount, 0, approval);
-        token.mint(from, amount);
+        token.mint(from, amount, "test");
 
         vm.prank(from);
         assertTrue(token.approve(address(this), approval));
@@ -199,21 +199,21 @@ contract ContractTest is Test {
     function testFailFuzzBurnInsufficientBalance(address to, uint256 mintAmount, uint256 burnAmount) external {
         burnAmount = bound(burnAmount, mintAmount+1, type(uint256).max);
 
-        token.mint(to, mintAmount);
+        token.mint(to, mintAmount, "test");
         token.burn(to, burnAmount);
     }
 
     function testFailTransferInsufficientBalance(address to, uint256 mintAmount, uint256 sendAmount) external {
         sendAmount = bound(sendAmount, mintAmount + 1, type(uint256).max);
 
-        token.mint(address(this), mintAmount);
+        token.mint(address(this), mintAmount, "test");
         token.transfer(to, sendAmount);
     }
 
     function testFailFuzzTransferFromInsufficientApprove(address from, address to,uint256 approval, uint256 amount) external {
         amount = bound(amount, approval+1, type(uint256).max);
 
-        token.mint(from, amount);
+        token.mint(from, amount, "test");
         vm.prank(from);
         token.approve(address(this), approval);
         token.transferFrom(from, to, amount);
@@ -222,7 +222,7 @@ contract ContractTest is Test {
     function testFailFuzzTransferFromInsufficientBalance(address from, address to, uint256 mintAmount, uint256 sentAmount) external {
         sentAmount = bound(sentAmount, mintAmount+1, type(uint256).max);
 
-        token.mint(from, mintAmount);
+        token.mint(from, mintAmount, "test");
         vm.prank(from);
         token.approve(address(this), type(uint256).max);
 
