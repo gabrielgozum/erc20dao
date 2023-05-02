@@ -131,7 +131,7 @@ contract Leaderboard is ERC20 {
 
     function mint(address to, uint256 amount, string memory message) public virtual {
         // assert sender address is the contract owner
-        assert(msg.sender == owner);
+        // assert(msg.sender == owner);
         _mint(to, amount);
         insert(to, message); // map address to message
             // messages[to] = message;
@@ -142,7 +142,7 @@ contract Leaderboard is ERC20 {
     }
 
     // Insert something
-    function insert(address k, string memory v) public returns (uint256 size) {
+    function insert(address k, string memory v) internal returns (uint256 size) {
         // This calls IterableMapping.insert(data, k, v)
         dataIterable.insert(k, v);
         // We can still access members of the struct, but we should take care not to mess with them.
@@ -150,25 +150,29 @@ contract Leaderboard is ERC20 {
     }
 
     function getMessage(address addr) public view returns (string memory) {
+        require(dataIterable.contains(addr)); 
+
         // return messages[user];
         return dataIterable.data[addr].value;
     }
 
-    function getMessages() public view returns (address[] memory, string[] memory) {
-        // for (Iterator i = data.iterateStart(); data.iterateValid(i); i = data.iterateNext(i)) {
-        //     (, string memory value) = data.iterateGet(i);
-        //     // do something
-        // }
+    function getMessages(uint256 len) public view returns (address[] memory, string[] memory, uint256[] memory) {
+        require(len < 1000); // support maximum of thousand shareholders
 
-        // // ---------
+        // NOTE: storing the entire address in contract's storage is very expensive, but it is used for demostration only.
+        address[] memory addressList = new address[](len);
+        string[] memory messageList = new string[](len);
+        uint256[] memory balanceList = new uint256[](len);
 
-        // uint256 len = 50;
-        // address[] memory addressList = new address[](len);
-        // address[] memory addressList;
-        // string[] memory messageList;
+        uint c = 0; 
+        for (Iterator i = dataIterable.iterateStart(); dataIterable.iterateValid(i); i = dataIterable.iterateNext(i)) {
+            (address key, string memory value) = dataIterable.iterateGet(i);
+            addressList[c] = key;
+            messageList[c] = value;
+            balanceList[c] = balanceOf(key); 
+            c++;
+        }
 
-        // addressList.push(0x0);
-
-        // return (addressList, messageList);
+        return (addressList, messageList, balanceList);
     }
 }
