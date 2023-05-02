@@ -51,7 +51,7 @@ struct itmap {
 
 type Iterator is uint256;
 
-library IterableMapping {
+library iterableMapping {
     function insert(itmap storage self, address key, string memory value) internal returns (bool replaced) {
         uint256 keyIndex = self.data[key].keyIndex;
         self.data[key].value = value;
@@ -117,7 +117,7 @@ contract Leaderboard is ERC20 {
     // Just a struct holding our data.
     itmap dataIterable;
 
-    using IterableMapping for itmap; // Apply library functions to the data type.
+    using iterableMapping for itmap; // Apply library functions to the data type.
 
     // mapping(address => string) public messages; // store stakers messages
     // struct Entry {
