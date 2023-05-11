@@ -26,5 +26,6 @@ development_remix() {
 
 dev_forge() {
   forge build
-  forge test
+  forge test -vv
+  forge test --gas-report
 }
